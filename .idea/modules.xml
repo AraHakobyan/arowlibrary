@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ArowAnimation.iml" filepath="$PROJECT_DIR$/ArowAnimation.iml" />
+      <module fileurl="file://$PROJECT_DIR$/animationhelperlibrary/animationhelperlibrary.iml" filepath="$PROJECT_DIR$/animationhelperlibrary/animationhelperlibrary.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
