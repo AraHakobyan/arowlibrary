@@ -57,7 +57,7 @@ artifacts {
 }
 
 group = 'arow.animhelper.lib'
-version = '0.1.2'
+version = '0.1.5'
 
 install {
     repositories.mavenInstaller {
@@ -69,8 +69,8 @@ install {
 
             packaging 'aar'
             groupId 'arow.animhelper.lib'
-            artifactId 'helper'
-            version '0.1.2'
+            artifactId 'animationhelperlibrary'
+            version '0.1.5'
 
             licenses {
                 license {
@@ -109,10 +109,10 @@ bintray {
         vcsUrl = 'https://github.com/AraHakobyan/arowlibrary.git'
         publish = true
         version {
-            name = '0.1.2'
+            name = '0.1.5'
             desc = 'Naughty or Nice 0.1.1'
             released = new Date()
-            vcsTag = 'v0.1.2'
+            vcsTag = 'v0.1.5'
         }
     }
 }
