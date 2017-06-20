@@ -4,10 +4,13 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.RelativeLayout;
 
-import com.example.animationhelperlibrary.ColorAnimation;
-import com.example.animationhelperlibrary.DrawPolylineAnimation;
+import com.example.animationhelperlibrary.animation.ColorAnimation;
+import com.example.animationhelperlibrary.animation.DrawPolylineAnimation;
+import com.example.animationhelperlibrary.animation.HideAnimation;
 import com.example.animationhelperlibrary.roadhelper.RoadHelper;
 import com.example.animationhelperlibrary.roadhelper.RoadInfo;
 import com.example.animationhelperlibrary.roadhelper.RoadIsReadyListener;
@@ -31,6 +34,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private RoadInfo roadInfo;
     private Polyline line;
     private AnimatorSet animatorSet;
+     private RelativeLayout linearLayout;
+     private FloatingActionButton fab;
 
 
     @Override
@@ -38,6 +43,8 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        linearLayout = (RelativeLayout) findViewById(R.id.layout_id_1);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         mapView = (MapView) findViewById(R.id.map_view);
         mapView.onCreate(null);
         mapView.onResume();
@@ -85,10 +92,16 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         animatorSet.start();
 
     }
-
+private HideAnimation hideAnimation;
     @Override
     public void onMapClick(LatLng latLng) {
         RoadHelper.getInstance().addPoint(latLng);
+        if(hideAnimation == null){
+            hideAnimation = new HideAnimation(getWindowManager().getDefaultDisplay(),linearLayout,fab);
+
+        }
+        hideAnimation.startAll();
+
     }
 
 
@@ -100,5 +113,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .color(Color.BLACK));
         RoadHelper.getInstance().clear();
         RoadHelper.getInstance().setPoints(YEREVAN_KENTRON, ABOVYAN_KINO, CHARENTSAVAN_KINO).addRoadIsReadyListener(this);
+//        ShowAnimation showAnimation = new ShowAnimation(getWindowManager().getDefaultDisplay(),linearLayout,fab);
+//        showAnimation.startAll();
     }
 }

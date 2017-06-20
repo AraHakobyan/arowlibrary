@@ -1,4 +1,4 @@
-package com.example.animationhelperlibrary;
+package com.example.animationhelperlibrary.animation;
 
 import android.animation.Animator;
 import android.animation.ArgbEvaluator;
