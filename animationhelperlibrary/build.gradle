@@ -57,7 +57,7 @@ artifacts {
 }
 
 group = 'arow.animhelper.lib'
-version = '0.1.7'
+version = '0.1.8'
 
 install {
     repositories.mavenInstaller {
@@ -70,7 +70,7 @@ install {
             packaging 'aar'
             groupId 'arow.animhelper.lib'
             artifactId 'animationhelperlibrary'
-            version '0.1.7'
+            version '0.1.8'
 
             licenses {
                 license {
@@ -109,10 +109,10 @@ bintray {
         vcsUrl = 'https://github.com/AraHakobyan/arowlibrary.git'
         publish = true
         version {
-            name = '0.1.7'
-            desc = 'Naughty or Nice 0.1.1'
+            name = '0.1.8'
+            desc = 'hide and show animation'
             released = new Date()
-            vcsTag = 'v0.1.7'
+            vcsTag = 'v0.1.8'
         }
     }
 }

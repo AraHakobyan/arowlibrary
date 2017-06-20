@@ -1,12 +1,17 @@
-package com.example.animationhelperlibrary.animation;
+package com.example.animationhelperlibrary.animation.hide_view;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.Display;
 import android.view.View;
+
+import com.example.animationhelperlibrary.animation.ConstsAnimation;
+import com.example.animationhelperlibrary.animation.models.ViewProperty;
+import com.example.animationhelperlibrary.animation.utills.ViewStartPos;
 
 import java.util.ArrayList;
 
@@ -20,8 +25,14 @@ public class ShowAnimation {
     private int mDisplayWidth;
     private ArrayList<Animator> allAnimators;
     private AnimatorSet animatorSet;
-
-    public ShowAnimation(Display display, View... views) {
+    private static ShowAnimation instance;
+    public static synchronized ShowAnimation getInstance(){
+        if (instance == null){
+            instance = new ShowAnimation();
+        }
+        return instance;
+    }
+    public void setShowAnim(Display display, View... views) {
 
         stopAll();
 
@@ -107,7 +118,8 @@ public class ShowAnimation {
         final float mY = view.getY();
 
         ValueAnimator toDownAnimator = ValueAnimator.ofFloat(mDisplayHeight, viewProperty.getmY());
-        toDownAnimator.setDuration(1500);
+        toDownAnimator.setDuration(ConstsAnimation.SHOW_ANIMATION_DURATION);
+        toDownAnimator.setInterpolator(new FastOutSlowInInterpolator());
         toDownAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -127,7 +139,8 @@ public class ShowAnimation {
         final float mY = view.getY();
 
         ValueAnimator toUpAnimator = ValueAnimator.ofFloat(-210, viewProperty.getmY());
-        toUpAnimator.setDuration(1500);
+        toUpAnimator.setDuration(ConstsAnimation.SHOW_ANIMATION_DURATION);
+        toUpAnimator.setInterpolator(new FastOutSlowInInterpolator());
         toUpAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
@@ -148,7 +161,8 @@ public class ShowAnimation {
         for (final View view : viewArrayList) {
 
             ValueAnimator changeAlfaAnimator = ValueAnimator.ofInt(1, 254);
-            changeAlfaAnimator.setDuration(1500);
+            changeAlfaAnimator.setDuration(ConstsAnimation.SHOW_ANIMATION_DURATION);
+            changeAlfaAnimator.setInterpolator(new FastOutSlowInInterpolator());
             changeAlfaAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
@@ -173,7 +187,7 @@ public class ShowAnimation {
 //            final int mHeight = view.getHeight();
 //            final int mWidth = view.getWidth();
 //            ValueAnimator changeBoundsAnimator = ValueAnimator.ofInt(0, 100);
-//            changeBoundsAnimator.setDuration(1500);
+//            changeBoundsAnimator.setDuration(ConstsAnimation.SHOW_ANIMATION_DURATION);
 //            changeBoundsAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
 //                @Override
 //                public void onAnimationUpdate(ValueAnimator animation) {

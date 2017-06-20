@@ -1,4 +1,4 @@
-package com.example.animationhelperlibrary.animation;
+package com.example.animationhelperlibrary.animation.hide_view;
 
 import android.animation.Animator;
 import android.animation.AnimatorSet;
@@ -6,8 +6,13 @@ import android.animation.ValueAnimator;
 import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.RequiresApi;
+import android.support.v4.view.animation.FastOutSlowInInterpolator;
 import android.view.Display;
 import android.view.View;
+
+import com.example.animationhelperlibrary.animation.ConstsAnimation;
+import com.example.animationhelperlibrary.animation.interfaces.CanShowCallback;
+import com.example.animationhelperlibrary.animation.utills.ViewStartPos;
 
 import java.util.ArrayList;
 
@@ -20,19 +25,18 @@ public class HideAnimation {
     CanShowCallback canShowCallback = new CanShowCallback() {
         @Override
         public void canShowCallback(boolean isCanShow) {
-            if(isCanShow) showAnimation.startAll();
+            if (isCanShow) ShowAnimation.getInstance().startAll();
         }
     };
-    private ArrayList<ValueAnimator> changeBoundsAnimators;
-    private ArrayList<ValueAnimator> changeAlfaAnimators;
-    private ArrayList<ValueAnimator> animateToUp;
-    private ArrayList<ValueAnimator> animateToDown;
+
     private int viewsLengts = 0;
     private int mDisplayHeight;
     private int mDisplayWidth;
     private ArrayList<Animator> allAnimators;
     private AnimatorSet animatorSet;
-    private ShowAnimation showAnimation;
+    private ArrayList<View> viewArrayList;
+    private Display display;
+    private View[] views;
 
 
     private final Handler handler = new Handler();
@@ -45,22 +49,16 @@ public class HideAnimation {
     };
 
 
-
     public HideAnimation(Display display, View... views) {
         stopAll();
 
-        allAnimators = new ArrayList<>();
-        ArrayList<View> viewArrayList = new ArrayList<>();
+        this.views = views;
+        this.display = display;
+        viewArrayList = new ArrayList<>();
         viewsLengts = views.length;
         for (int i = 0; i < views.length; i++) {
             viewArrayList.add(views[i]);
         }
-        if(ViewStartPos.getInstance().getViewProperties() == null)
-        ViewStartPos.getInstance().setProperty(viewArrayList);
-        prepeareToHide(display,viewArrayList);
-        showAnimation = new ShowAnimation(display,views);
-
-
 
 
     }
@@ -70,13 +68,13 @@ public class HideAnimation {
         mDisplayWidth = display.getWidth();
         //changeBoundsAnimators = changeBoundsAnimation(viewArrayList, mDisplayHeight, mDisplayWidth);
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
-            changeAlfaAnimators = changeAlfaAnimator(viewArrayList, mDisplayHeight, mDisplayWidth);
+            changeAlfaAnimator(viewArrayList, mDisplayHeight, mDisplayWidth);
         }
 
 
-        for (View view : viewArrayList){
+        for (View view : viewArrayList) {
             //if view center is above of display center
-            if(view.getY() + view.getHeight() / 2 < mDisplayHeight / 2){
+            if (view.getY() + view.getHeight() / 2 < mDisplayHeight / 2) {
                 toUpAnimation(view, mDisplayHeight, mDisplayWidth);
 
             } else {
@@ -88,9 +86,14 @@ public class HideAnimation {
 
     public void startAll() {
 
-        showAnimation.stopAll();
 
-        if(ViewStartPos.getInstance().isCanAnimate()){
+        if (ViewStartPos.getInstance().isCanAnimate()) {
+            allAnimators = new ArrayList<>();
+            if (ViewStartPos.getInstance().getViewProperties() == null)
+                ViewStartPos.getInstance().setProperty(viewArrayList);
+            prepeareToHide(display, viewArrayList);
+            ShowAnimation.getInstance().setShowAnim(display, views);
+            ShowAnimation.getInstance().stopAll();
             animatorSet = new AnimatorSet();
             animatorSet.playTogether(allAnimators);
 
@@ -99,7 +102,7 @@ public class HideAnimation {
                 public void onAnimationStart(Animator animation) {
                     handler.removeCallbacks(runnable);
                     ViewStartPos.getInstance().setCanAnimate(false);
-                    handler.postDelayed(runnable,3000);
+                    handler.postDelayed(runnable, ConstsAnimation.DELAY_ANIMATION_DURATION);
                 }
 
                 @Override
@@ -120,17 +123,14 @@ public class HideAnimation {
             animatorSet.start();
         } else {
             handler.removeCallbacks(runnable);
-            handler.postDelayed(runnable,3000);
+            handler.postDelayed(runnable, ConstsAnimation.DELAY_ANIMATION_DURATION);
 
         }
 
 
-
-
-
     }
 
-    private void stopAll(){
+    private void stopAll() {
         if (animatorSet != null) {
             animatorSet.removeAllListeners();
             animatorSet.end();
@@ -139,43 +139,45 @@ public class HideAnimation {
 
     }
 
-    private void  toDownAnimation(final View view, int mDisplayHeight, int mDisplayWidth) {
+    private void toDownAnimation(final View view, int mDisplayHeight, int mDisplayWidth) {
 
-            final float mY = view.getY();
+        final float mY = view.getY();
 
-            ValueAnimator toDownAnimator = ValueAnimator.ofFloat(mY, mDisplayHeight );
-            toDownAnimator.setDuration(1500);
-            toDownAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float delta = (float) animation.getAnimatedValue();
-                    view.setY(delta);
-                    view.requestLayout();
+        ValueAnimator toDownAnimator = ValueAnimator.ofFloat(mY, mDisplayHeight);
+        toDownAnimator.setDuration(ConstsAnimation.HIDE_ANIMATION_DURATION);
+        toDownAnimator.setInterpolator(new FastOutSlowInInterpolator());
+        toDownAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float delta = (float) animation.getAnimatedValue();
+                view.setY(delta);
+                view.requestLayout();
 
-                }
-            });
+            }
+        });
 
-            allAnimators.add(toDownAnimator);
+        allAnimators.add(toDownAnimator);
     }
 
     private void toUpAnimation(final View view, int mDisplayHeight, int mDisplayWidth) {
 
 
-            final float mY = view.getY();
+        final float mY = view.getY();
 
-            ValueAnimator toUpAnimator = ValueAnimator.ofFloat(mY, -210);
-            toUpAnimator.setDuration(1500);
-            toUpAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    float delta = (float) animation.getAnimatedValue();
-                    view.setY(delta);
-                    view.requestLayout();
+        ValueAnimator toUpAnimator = ValueAnimator.ofFloat(mY, -210);
+        toUpAnimator.setInterpolator(new FastOutSlowInInterpolator());
+        toUpAnimator.setDuration(ConstsAnimation.HIDE_ANIMATION_DURATION);
+        toUpAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                float delta = (float) animation.getAnimatedValue();
+                view.setY(delta);
+                view.requestLayout();
 
-                }
-            });
+            }
+        });
 
-            allAnimators.add(toUpAnimator);
+        allAnimators.add(toUpAnimator);
 
     }
 
@@ -184,8 +186,10 @@ public class HideAnimation {
         ArrayList<ValueAnimator> valueAnimators = new ArrayList<>();
         for (final View view : viewArrayList) {
 
-            ValueAnimator changeAlfaAnimator = ValueAnimator.ofInt(254, 1);
-            changeAlfaAnimator.setDuration(1500);
+
+            ValueAnimator changeAlfaAnimator = ValueAnimator.ofInt(150, 1);
+            changeAlfaAnimator.setInterpolator(new FastOutSlowInInterpolator());
+            changeAlfaAnimator.setDuration(ConstsAnimation.HIDE_ANIMATION_DURATION);
             changeAlfaAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
@@ -210,7 +214,7 @@ public class HideAnimation {
             final int mHeight = view.getHeight();
             final int mWidth = view.getWidth();
             ValueAnimator changeBoundsAnimator = ValueAnimator.ofInt(0, 100);
-            changeBoundsAnimator.setDuration(1500);
+            changeBoundsAnimator.setDuration(ConstsAnimation.HIDE_ANIMATION_DURATION);
             changeBoundsAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
@@ -227,7 +231,6 @@ public class HideAnimation {
         }
         return valueAnimators;
     }
-
 
 
 }

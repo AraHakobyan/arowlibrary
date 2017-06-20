@@ -4,17 +4,17 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.RelativeLayout;
 
-import com.example.animationhelperlibrary.animation.ColorAnimation;
-import com.example.animationhelperlibrary.animation.DrawPolylineAnimation;
-import com.example.animationhelperlibrary.animation.HideAnimation;
+import com.example.animationhelperlibrary.animation.for_road.ColorAnimation;
+import com.example.animationhelperlibrary.animation.for_road.DrawPolylineAnimation;
+import com.example.animationhelperlibrary.animation.hide_view.HideAnimation;
 import com.example.animationhelperlibrary.roadhelper.RoadHelper;
 import com.example.animationhelperlibrary.roadhelper.RoadInfo;
 import com.example.animationhelperlibrary.roadhelper.RoadIsReadyListener;
@@ -38,22 +38,28 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
     private RoadInfo roadInfo;
     private Polyline line;
     private AnimatorSet animatorSet;
-    private RelativeLayout linearLayout;
+    private RelativeLayout relativeLayout;
     private FloatingActionButton fab;
+    private Toolbar myToolbar;
+    private View moveLayout;
+    private int mY = 0;
+    private float mCoordinateY = 0;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        linearLayout = (RelativeLayout) findViewById(R.id.layout_id_1);
+        myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        relativeLayout = (RelativeLayout) findViewById(R.id.layout_id_1);
+        moveLayout = findViewById(R.id.move_view_id);
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        moveLayout.setOnTouchListener(this);
         mapView = (MapView) findViewById(R.id.map_view);
         mapView.onCreate(null);
         mapView.onResume();
         mapView.getMapAsync(this);
-        mapView.setOnTouchListener(this);
 
 
     }
@@ -120,18 +126,43 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        Log.d("MapViewTouched", "Map View Is Touched ");
-        return false;
-    }
-
-    Handler handler = new Handler();
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-
-            hideAnimation.startAll();
+        if(mY == 0){
+            mY = moveLayout.getHeight();
+            mCoordinateY = moveLayout.getY();
         }
-    };
+        int id = v.getId();
+        int Y = (int) event.getRawY() ;
+        switch (id) {
+            case R.id.move_view_id:
+
+                moveLayout.setBackgroundColor(Color.RED);
+                break;
+        }
+        switch (event.getAction() & MotionEvent.ACTION_MASK) {
+            case MotionEvent.ACTION_DOWN:
+
+                break;
+            case MotionEvent.ACTION_UP:
+                break;
+            case MotionEvent.ACTION_POINTER_DOWN:
+
+                break;
+            case MotionEvent.ACTION_POINTER_UP:
+
+                break;
+            case MotionEvent.ACTION_MOVE:
+                float deltaY = Y - moveLayout.getY();
+                Log.d("fab","fab is ACTION_MOVE" + moveLayout.getHeight()) ;
+                moveLayout.getLayoutParams().height = (int) (moveLayout.getHeight()+Y);
+                moveLayout.requestLayout();
+                mY = mY + 100;
+
+                break;
+        }
+
+
+        return true;
+    }
 
     @Override
     public void onCameraMove() {
@@ -141,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapLoaded() {
-        hideAnimation = new HideAnimation(getWindowManager().getDefaultDisplay(), linearLayout, fab);
+        hideAnimation = new HideAnimation(getWindowManager().getDefaultDisplay(), relativeLayout, fab, myToolbar);
         googleMap.setOnCameraMoveListener(this);
 
     }

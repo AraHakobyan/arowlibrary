@@ -1,4 +1,4 @@
-package com.example.animationhelperlibrary.animation;
+package com.example.animationhelperlibrary.animation.models;
 
 /**
  * Created by Aro-PC on 6/20/2017.

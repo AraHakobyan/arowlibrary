@@ -1,13 +1,15 @@
-package com.example.animationhelperlibrary.animation;
+package com.example.animationhelperlibrary.animation.utills;
 
 import android.view.View;
+
+import com.example.animationhelperlibrary.animation.models.ViewProperty;
 
 import java.util.ArrayList;
 
 /**
  * Created by Aro-PC on 6/20/2017.
  */
- class ViewStartPos {
+public class ViewStartPos {
 
     private static ViewStartPos instance;
     public static synchronized ViewStartPos getInstance(){

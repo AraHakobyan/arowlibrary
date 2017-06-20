@@ -1,4 +1,4 @@
-package com.example.animationhelperlibrary.animation;
+package com.example.animationhelperlibrary.animation.for_road;
 
 import android.animation.ValueAnimator;
 import android.view.animation.AccelerateInterpolator;
