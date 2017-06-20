@@ -17,6 +17,12 @@ import java.util.ArrayList;
 
 public class HideAnimation {
 
+    CanShowCallback canShowCallback = new CanShowCallback() {
+        @Override
+        public void canShowCallback(boolean isCanShow) {
+            if(isCanShow) showAnimation.startAll();
+        }
+    };
     private ArrayList<ValueAnimator> changeBoundsAnimators;
     private ArrayList<ValueAnimator> changeAlfaAnimators;
     private ArrayList<ValueAnimator> animateToUp;
@@ -27,23 +33,21 @@ public class HideAnimation {
     private ArrayList<Animator> allAnimators;
     private AnimatorSet animatorSet;
     private ShowAnimation showAnimation;
+
+
     private final Handler handler = new Handler();
     private final Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            showAnimation.startAll();
-
+            canShowCallback.canShowCallback(true);
+            ViewStartPos.getInstance().setCanAnimate(true);
         }
     };
 
 
+
     public HideAnimation(Display display, View... views) {
-
-
-        handler.removeCallbacks(runnable);
         stopAll();
-
-        handler.postDelayed(runnable,3000);
 
         allAnimators = new ArrayList<>();
         ArrayList<View> viewArrayList = new ArrayList<>();
@@ -55,6 +59,7 @@ public class HideAnimation {
         ViewStartPos.getInstance().setProperty(viewArrayList);
         prepeareToHide(display,viewArrayList);
         showAnimation = new ShowAnimation(display,views);
+
 
 
 
@@ -83,14 +88,18 @@ public class HideAnimation {
 
     public void startAll() {
 
+        showAnimation.stopAll();
+
         if(ViewStartPos.getInstance().isCanAnimate()){
             animatorSet = new AnimatorSet();
             animatorSet.playTogether(allAnimators);
-            animatorSet.start();
+
             animatorSet.addListener(new Animator.AnimatorListener() {
                 @Override
                 public void onAnimationStart(Animator animation) {
+                    handler.removeCallbacks(runnable);
                     ViewStartPos.getInstance().setCanAnimate(false);
+                    handler.postDelayed(runnable,3000);
                 }
 
                 @Override
@@ -108,11 +117,11 @@ public class HideAnimation {
 
                 }
             });
+            animatorSet.start();
         } else {
             handler.removeCallbacks(runnable);
-            stopAll();
-
             handler.postDelayed(runnable,3000);
+
         }
 
 
@@ -218,5 +227,7 @@ public class HideAnimation {
         }
         return valueAnimators;
     }
+
+
 
 }

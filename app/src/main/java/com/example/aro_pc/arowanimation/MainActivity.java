@@ -4,8 +4,12 @@ import android.animation.AnimatorSet;
 import android.animation.ValueAnimator;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.RelativeLayout;
 
 import com.example.animationhelperlibrary.animation.ColorAnimation;
@@ -27,15 +31,15 @@ import static com.example.aro_pc.arowanimation.Consts.ABOVYAN_KINO;
 import static com.example.aro_pc.arowanimation.Consts.CHARENTSAVAN_KINO;
 import static com.example.aro_pc.arowanimation.Consts.YEREVAN_KENTRON;
 
-public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, RoadIsReadyListener, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener {
+public class MainActivity extends AppCompatActivity implements OnMapReadyCallback, RoadIsReadyListener, GoogleMap.OnMapClickListener, GoogleMap.OnMapLongClickListener, View.OnTouchListener, GoogleMap.OnCameraMoveListener, GoogleMap.OnMapLoadedCallback {
 
     private MapView mapView;
     private GoogleMap googleMap;
     private RoadInfo roadInfo;
     private Polyline line;
     private AnimatorSet animatorSet;
-     private RelativeLayout linearLayout;
-     private FloatingActionButton fab;
+    private RelativeLayout linearLayout;
+    private FloatingActionButton fab;
 
 
     @Override
@@ -49,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         mapView.onCreate(null);
         mapView.onResume();
         mapView.getMapAsync(this);
+        mapView.setOnTouchListener(this);
 
 
     }
@@ -59,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         this.googleMap = googleMap;
         googleMap.setOnMapLongClickListener(this);
         googleMap.setOnMapClickListener(this);
+        googleMap.setOnMapLoadedCallback(this);
         line = googleMap.addPolyline(new PolylineOptions()
                 .width(15)
                 .color(Color.BLACK));
@@ -92,15 +98,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         animatorSet.start();
 
     }
-private HideAnimation hideAnimation;
+
+    private HideAnimation hideAnimation;
+
     @Override
     public void onMapClick(LatLng latLng) {
         RoadHelper.getInstance().addPoint(latLng);
-        if(hideAnimation == null){
-            hideAnimation = new HideAnimation(getWindowManager().getDefaultDisplay(),linearLayout,fab);
-
-        }
-        hideAnimation.startAll();
 
     }
 
@@ -113,7 +116,33 @@ private HideAnimation hideAnimation;
                 .color(Color.BLACK));
         RoadHelper.getInstance().clear();
         RoadHelper.getInstance().setPoints(YEREVAN_KENTRON, ABOVYAN_KINO, CHARENTSAVAN_KINO).addRoadIsReadyListener(this);
-//        ShowAnimation showAnimation = new ShowAnimation(getWindowManager().getDefaultDisplay(),linearLayout,fab);
-//        showAnimation.startAll();
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        Log.d("MapViewTouched", "Map View Is Touched ");
+        return false;
+    }
+
+    Handler handler = new Handler();
+    Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+
+            hideAnimation.startAll();
+        }
+    };
+
+    @Override
+    public void onCameraMove() {
+        hideAnimation.startAll();
+
+    }
+
+    @Override
+    public void onMapLoaded() {
+        hideAnimation = new HideAnimation(getWindowManager().getDefaultDisplay(), linearLayout, fab);
+        googleMap.setOnCameraMoveListener(this);
+
     }
 }

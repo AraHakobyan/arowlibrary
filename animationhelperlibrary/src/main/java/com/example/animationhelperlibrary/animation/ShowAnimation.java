@@ -59,7 +59,7 @@ public class ShowAnimation {
 
     }
 
-    private void stopAll(){
+    public void stopAll(){
         if (animatorSet != null) {
             animatorSet.removeAllListeners();
             animatorSet.end();
@@ -72,18 +72,18 @@ public class ShowAnimation {
 
         animatorSet = new AnimatorSet();
         animatorSet.playTogether(allAnimators);
-        animatorSet.start();
+
         animatorSet.addListener(new Animator.AnimatorListener() {
             @Override
             public void onAnimationStart(Animator animation) {
 
-                ViewStartPos.getInstance().setCanAnimate(true);
+
             }
 
             @Override
             public void onAnimationEnd(Animator animation) {
 
-                ViewStartPos.getInstance().clear();
+
 
             }
 
@@ -97,6 +97,7 @@ public class ShowAnimation {
 
             }
         });
+        animatorSet.start();
 
 
     }
@@ -105,7 +106,7 @@ public class ShowAnimation {
 
         final float mY = view.getY();
 
-        ValueAnimator toDownAnimator = ValueAnimator.ofFloat(mY, viewProperty.getmY());
+        ValueAnimator toDownAnimator = ValueAnimator.ofFloat(mDisplayHeight, viewProperty.getmY());
         toDownAnimator.setDuration(1500);
         toDownAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -125,7 +126,7 @@ public class ShowAnimation {
 
         final float mY = view.getY();
 
-        ValueAnimator toUpAnimator = ValueAnimator.ofFloat(mY, viewProperty.getmY());
+        ValueAnimator toUpAnimator = ValueAnimator.ofFloat(-210, viewProperty.getmY());
         toUpAnimator.setDuration(1500);
         toUpAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -165,28 +166,28 @@ public class ShowAnimation {
         return valueAnimators;
     }
 
-    private ArrayList<ValueAnimator> changeBoundsAnimation(ArrayList<View> viewArrayList, int mDisplayHeight, int mDisplayWidth) {
-        ArrayList<ValueAnimator> valueAnimators = new ArrayList<>();
-        for (final View view : viewArrayList) {
-
-            final int mHeight = view.getHeight();
-            final int mWidth = view.getWidth();
-            ValueAnimator changeBoundsAnimator = ValueAnimator.ofInt(0, 100);
-            changeBoundsAnimator.setDuration(1500);
-            changeBoundsAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-                @Override
-                public void onAnimationUpdate(ValueAnimator animation) {
-                    int delta = 100 - (int) animation.getAnimatedValue();
-
-                    view.getLayoutParams().height = mHeight * delta / 100;
-                    view.getLayoutParams().width = mWidth * delta / 100;
-                    view.requestLayout();
-
-                }
-            });
-            valueAnimators.add(changeBoundsAnimator);
-            allAnimators.add(changeBoundsAnimator);
-        }
-        return valueAnimators;
-    }
+//    private ArrayList<ValueAnimator> changeBoundsAnimation(ArrayList<View> viewArrayList, int mDisplayHeight, int mDisplayWidth) {
+//        ArrayList<ValueAnimator> valueAnimators = new ArrayList<>();
+//        for (final View view : viewArrayList) {
+//
+//            final int mHeight = view.getHeight();
+//            final int mWidth = view.getWidth();
+//            ValueAnimator changeBoundsAnimator = ValueAnimator.ofInt(0, 100);
+//            changeBoundsAnimator.setDuration(1500);
+//            changeBoundsAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+//                @Override
+//                public void onAnimationUpdate(ValueAnimator animation) {
+//                    int delta = 100 - (int) animation.getAnimatedValue();
+//
+//                    view.getLayoutParams().height = mHeight * delta / 100;
+//                    view.getLayoutParams().width = mWidth * delta / 100;
+//                    view.requestLayout();
+//
+//                }
+//            });
+//            valueAnimators.add(changeBoundsAnimator);
+//          //  allAnimators.add(changeBoundsAnimator);
+//        }
+//        return valueAnimators;
+//    }
 }
